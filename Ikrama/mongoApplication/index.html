@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookstore</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Bookstore</h1>
+    <form id="addBookForm">
+        <input type="text" id="title" placeholder="Title">
+        <input type="text" id="author" placeholder="Author">
+        <button type="button" onclick="addBook()">Add Book</button>
+        <button type="button" onclick="fetchBooks()">Fetch Books</button>
+    </form>
+    <div id="bookList">
+        <!-- Book list will be displayed here -->
+    </div>
+    <script>
+        async function addBook() {
+            const title = document.getElementById('title').value;
+            const author = document.getElementById('author').value;
+
+            try {
+                const response = await fetch('http://localhost:3000/api/books', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ title, author })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to add book');
+                }
+
+                const newBook = await response.json();
+                displayBook(newBook);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function fetchBooks() {
+            try {
+                const response = await fetch('http://localhost:3000/api/books');
+                const books = await response.json();
+
+                const bookList = document.getElementById('bookList');
+                bookList.innerHTML = '';
+
+                books.forEach(book => {
+                    const bookItem = document.createElement('div');
+                    bookItem.innerHTML = `<strong>Title:</strong> ${book.title}, <strong>Author:</strong> ${book.author}`;
+                    bookList.appendChild(bookItem);
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Fetch books when the page loads
+        
+    </script>
+</body>
+</html>
